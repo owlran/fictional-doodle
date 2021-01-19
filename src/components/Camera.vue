@@ -54,7 +54,6 @@ export default {
       }
     },
     async initializeCamera() {
-      this.stopVideoStream();
       const facingMode = this.useFrontCamera
         ? "user"
         : "environment";
