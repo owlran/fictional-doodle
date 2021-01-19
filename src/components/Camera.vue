@@ -22,8 +22,8 @@ export default {
       useFrontCamera: true,
       videoStream: null,
       constraints: {
-        audio: false,
-        video: true,
+        width: { min: 1024, ideal: 1280, max: 1920 },
+        height: { min: 576, ideal: 720, max: 1080 }
       },
     }
   },
@@ -55,9 +55,10 @@ export default {
     },
     async initializeCamera() {
       this.stopVideoStream();
-      // this.constraints.video.facingMode = this.useFrontCamera
-      //   ? "user"
-      //   : "environment";
+      const facingMode = this.useFrontCamera
+        ? "user"
+        : "environment";
+      this.$set(this.constraints.video, 'facingMode', facingMode);
       try {
         this.videoStream = await navigator.mediaDevices.getUserMedia(this.constraints);
         this.$refs.video.srcObject = this.videoStream;
