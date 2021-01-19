@@ -11,4 +11,4 @@ git add .
 git commit -m "Static site deploy"
 git push github HEAD:refs/for/gh-pages --force
 cd ..
-# rm -rf .deploy
+rm -rf .deploy
