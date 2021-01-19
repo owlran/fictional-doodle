@@ -46,7 +46,7 @@ export default {
     },
     switchCameraHandler() {
       this.useFrontCamera = !this.useFrontCamera;
-      this.itializeCamera();
+      this.initializeCamera();
     },
     stopVideoStream() {
       if (this.videoStream) {
