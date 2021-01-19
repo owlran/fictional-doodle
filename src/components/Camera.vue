@@ -16,16 +16,16 @@
 </template>
 
 <script>
-import adapter from 'webrtc-adapter';
-
 export default {
   data() {
     return {
       useFrontCamera: true,
       videoStream: null,
       constraints: {
-        width: { min: 1024, ideal: 1280, max: 1920 },
-        height: { min: 576, ideal: 720, max: 1080 }
+        video: {
+          width: { min: 1024, ideal: 1280, max: 1920 },
+          height: { min: 576, ideal: 720, max: 1080 }
+        },
       },
     }
   },
@@ -56,7 +56,7 @@ export default {
       }
     },
     handleSuccess(stream) {
-      const video = this.$refs.video;
+      // const video = this.$refs.video;
       const videoTracks = stream.getVideoTracks();
       console.log('Got stream with constraints:', this.constraints);
       console.log(`Using video device: ${videoTracks[0].label}`);
@@ -64,10 +64,9 @@ export default {
       this.$refs.video.srcObject = stream;
     },
     async initializeCamera() {
-      const facingMode = this.useFrontCamera
+      this.constraints.video.facingMode = this.useFrontCamera
         ? "user"
         : "environment";
-      this.$set(this.constraints.video, 'facingMode', facingMode);
       try {
         this.videoStream = await navigator.mediaDevices.getUserMedia(this.constraints);
         this.handleSuccess(this.videoStream);
