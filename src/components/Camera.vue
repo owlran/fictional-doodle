@@ -16,6 +16,8 @@
 </template>
 
 <script>
+import adapter from 'webrtc-adapter';
+
 export default {
   data() {
     return {
