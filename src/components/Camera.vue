@@ -2,7 +2,7 @@
 .camera
   .camera__container
     h1 Javascript Camera
-    video#video(autoplay ref="video")
+    video#video(autoplay playsinline ref="video")
     .camera__wrapper.camera__wrapper--buttons
       button#btnPlay(@click="playHandler") play
       button#btnPause(@click="pauseHandler") pause
@@ -55,6 +55,14 @@ export default {
         });
       }
     },
+    handleSuccess(stream) {
+      const video = this.$refs.video;
+      const videoTracks = stream.getVideoTracks();
+      console.log('Got stream with constraints:', this.constraints);
+      console.log(`Using video device: ${videoTracks[0].label}`);
+      window.stream = stream; // make variable available to browser console
+      this.$refs.video.srcObject = stream;
+    },
     async initializeCamera() {
       const facingMode = this.useFrontCamera
         ? "user"
@@ -62,7 +70,7 @@ export default {
       this.$set(this.constraints.video, 'facingMode', facingMode);
       try {
         this.videoStream = await navigator.mediaDevices.getUserMedia(this.constraints);
-        this.$refs.video.srcObject = this.videoStream;
+        this.handleSuccess(this.videoStream);
       } catch (err) {
         alert("Could not access the camera");
       }
