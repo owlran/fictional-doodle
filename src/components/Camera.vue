@@ -55,9 +55,9 @@ export default {
     },
     async initializeCamera() {
       this.stopVideoStream();
-      this.constraints.video.facingMode = this.useFrontCamera
-        ? "user"
-        : "environment";
+      // this.constraints.video.facingMode = this.useFrontCamera
+      //   ? "user"
+      //   : "environment";
       try {
         this.videoStream = await navigator.mediaDevices.getUserMedia(this.constraints);
         this.$refs.video.srcObject = this.videoStream;
