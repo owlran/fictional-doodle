@@ -2,7 +2,7 @@
 .camera
   .camera__container
     h1 Javascript Camera
-    video#video(autoplay playsinline ref="video")
+    video.camera__video(autoplay playsinline ref="video")
     .camera__wrapper.camera__wrapper--buttons
       button#btnPlay(@click="playHandler") play
       button#btnPause(@click="pauseHandler") pause
@@ -10,7 +10,8 @@
       button#btnChangeCamera(@click="switchCameraHandler") change camera
     .camera__wrapper.camera__wrapper--photo
       h2 Screenshots
-      #screenshots(ref="screenshots")
+      .test(v-for="img in snapshots")
+        img(:src="img.src")
     .camera__wrapper.camera__wrapper--canvas
       canvas#canvas(ref="canvas")
 </template>
@@ -21,6 +22,7 @@ export default {
     return {
       useFrontCamera: true,
       videoStream: null,
+      snapshots: [],
       constraints: {
         video: {
           width: { min: 1024, ideal: 1280, max: 1920 },
@@ -42,7 +44,7 @@ export default {
       this.$refs.canvas.height = this.$refs.video.videoHeight;
       this.$refs.canvas.getContext("2d").drawImage(this.$refs.video, 0, 0);
       img.src = this.$refs.canvas.toDataURL("image/png");
-      this.$refs.screenshots.append(img);
+      this.snapshots.push(img);
     },
     switchCameraHandler() {
       this.useFrontCamera = !this.useFrontCamera;
@@ -83,6 +85,27 @@ export default {
 
 <style lang="scss" scoped>
 .camera {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  &__video {
+  }
+
+  &__wrapper {
+    &--canvas {
+      display: none;
+    }
+    &--buttons {
+      display: flex;
+      align-items: center;
+      justify-content: space-around;
+      button {
+        padding: 1px 2px;
+      }
+    }
+  }
 
 }
 </style>
