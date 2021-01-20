@@ -2,7 +2,6 @@
 .camera
   .camera__container
     h1 Javascript Camera
-    video.camera__video(autoplay playsinline ref="video")
     .camera__wrapper.camera__wrapper--canvas
       canvas#canvas(ref="canvas")
     .camera__wrapper.camera__wrapper--buttons
@@ -14,6 +13,7 @@
       h2 Screenshots
       .test(v-for="img in snapshots")
         img(:src="img.src")
+    video.camera__video(autoplay playsinline ref="video")
 </template>
 
 <script>
