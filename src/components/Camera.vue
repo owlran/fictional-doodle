@@ -2,18 +2,19 @@
 .camera
   .camera__container
     h1 Javascript Camera
-    .camera__wrapper.camera__wrapper--canvas
-      canvas#canvas(ref="canvas")
-    .camera__wrapper.camera__wrapper--buttons
-      button#btnPlay(@click="playHandler") play
-      button#btnPause(@click="pauseHandler") pause
-      button#btnScreenshot(@click="screenshotHandler") screen shot
-      button#btnChangeCamera(@click="switchCameraHandler") change camera
-    .camera__wrapper.camera__wrapper--photo
-      h2 Screenshots
-      .test(v-for="img in snapshots")
-        img(:src="img.src")
-    video.camera__video(autoplay playsinline ref="video")
+    .camera__loading(v-if="isLoading")
+      p Loading...
+    .camera__content(v-else)
+      .camera__wrapper.camera__wrapper--canvas
+        canvas#canvas(ref="canvas")
+      .camera__wrapper.camera__wrapper--buttons
+        button#btnScreenshot(@click="screenshotHandler") screen shot
+        button#btnChangeCamera(@click="switchCameraHandler") change camera
+      .camera__wrapper.camera__wrapper--photo
+        h2 Screenshots
+        .test(v-for="img in snapshots")
+          img(:src="img.src")
+      video.camera__video(autoplay playsinline ref="video")
 </template>
 
 <script>
@@ -22,6 +23,7 @@ import * as faceapi from 'face-api.js';
 export default {
   data() {
     return {
+      isLoading: true,
       useFrontCamera: true,
       videoStream: null,
       snapshots: [],
@@ -34,12 +36,6 @@ export default {
     };
   },
   methods: {
-    playHandler() {
-      this.$refs.video.play();
-    },
-    pauseHandler() {
-      this.$refs.video.pause();
-    },
     screenshotHandler() {
       const img = document.createElement("img");
       this.$refs.canvas.width = this.$refs.video.videoWidth;
@@ -108,6 +104,7 @@ export default {
       faceapi.nets.faceRecognitionNet.loadFromUri('./models'),
       faceapi.nets.faceExpressionNet.loadFromUri('./models')
     ]);
+    this.isLoading = false;
 
     this.initializeCamera();
   },
