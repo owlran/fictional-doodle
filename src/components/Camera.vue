@@ -130,7 +130,9 @@ export default {
   &__wrapper {
     &--canvas {
       // display: none;
-      width: 100%;
+      canvas {
+        width: 100%;
+      }
     }
     &--buttons {
       display: flex;
