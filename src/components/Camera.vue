@@ -17,6 +17,8 @@
 </template>
 
 <script>
+import * as faceapi from 'face-api.js';
+
 export default {
   data() {
     return {
@@ -26,10 +28,10 @@ export default {
       constraints: {
         video: {
           width: { min: 1024, ideal: 1280, max: 1920 },
-          height: { min: 576, ideal: 720, max: 1080 }
+          height: { min: 576, ideal: 720, max: 1080 },
         },
       },
-    }
+    };
   },
   methods: {
     playHandler() {
@@ -58,26 +60,55 @@ export default {
       }
     },
     handleSuccess(stream) {
-      // const video = this.$refs.video;
-      const videoTracks = stream.getVideoTracks();
-      console.log('Got stream with constraints:', this.constraints);
-      console.log(`Using video device: ${videoTracks[0].label}`);
-      window.stream = stream; // make variable available to browser console
-      this.$refs.video.srcObject = stream;
+      this.$nextTick(() => {
+        const video = this.$refs.video;
+        const videoTracks = stream.getVideoTracks();
+        console.log("Got stream with constraints:", this.constraints);
+        console.log(`Using video device: ${videoTracks[0].label}`);
+        window.stream = stream; // make variable available to browser console
+        this.$refs.video.srcObject = stream;
+        video.addEventListener('play', () => {
+          console.log('playing...');
+          const canvas = this.$refs.canvas;
+          const ctx = canvas.getContext('2d');
+          // const canvas = faceapi.createCanvasFromMedia(video);
+          // document.body.append(canvas)
+          const displaySize = { width: video.clientWidth, height: video.clientHeight }
+          faceapi.matchDimensions(canvas, displaySize)
+          setInterval(async () => {
+            ctx.drawImage(video, 0, 0);
+            const detections = await faceapi.detectAllFaces(video, new faceapi.TinyFaceDetectorOptions()).withFaceLandmarks().withFaceExpressions()
+            const resizedDetections = faceapi.resizeResults(detections, displaySize)
+            // canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height)
+            faceapi.draw.drawDetections(canvas, resizedDetections)
+            faceapi.draw.drawFaceLandmarks(canvas, resizedDetections)
+            faceapi.draw.drawFaceExpressions(canvas, resizedDetections)
+          }, 100)
+        });
+      });
     },
     async initializeCamera() {
       this.constraints.video.facingMode = this.useFrontCamera
         ? "user"
         : "environment";
       try {
-        this.videoStream = await navigator.mediaDevices.getUserMedia(this.constraints);
+        this.videoStream = await navigator.mediaDevices.getUserMedia(
+          this.constraints
+        );
         this.handleSuccess(this.videoStream);
       } catch (err) {
         alert("Could not access the camera");
       }
-    }
+    },
   },
-  mounted() {
+  async mounted() {
+    await Promise.all([
+      faceapi.nets.tinyFaceDetector.loadFromUri('/models'),
+      faceapi.nets.faceLandmark68Net.loadFromUri('/models'),
+      faceapi.nets.faceRecognitionNet.loadFromUri('/models'),
+      faceapi.nets.faceExpressionNet.loadFromUri('/models')
+    ]);
+
     this.initializeCamera();
   },
 };
@@ -95,7 +126,7 @@ export default {
 
   &__wrapper {
     &--canvas {
-      display: none;
+      // display: none;
     }
     &--buttons {
       display: flex;
@@ -106,6 +137,5 @@ export default {
       }
     }
   }
-
 }
 </style>
