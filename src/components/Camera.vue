@@ -3,6 +3,8 @@
   .camera__container
     h1 Javascript Camera
     video.camera__video(autoplay playsinline ref="video")
+    .camera__wrapper.camera__wrapper--canvas
+      canvas#canvas(ref="canvas")
     .camera__wrapper.camera__wrapper--buttons
       button#btnPlay(@click="playHandler") play
       button#btnPause(@click="pauseHandler") pause
@@ -12,8 +14,6 @@
       h2 Screenshots
       .test(v-for="img in snapshots")
         img(:src="img.src")
-    .camera__wrapper.camera__wrapper--canvas
-      canvas#canvas(ref="canvas")
 </template>
 
 <script>
@@ -116,17 +116,21 @@ export default {
 
 <style lang="scss" scoped>
 .camera {
+  width: 75%;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
 
   &__video {
+    position: absolute;
+    opacity: 0;
   }
 
   &__wrapper {
     &--canvas {
       // display: none;
+      width: 100%;
     }
     &--buttons {
       display: flex;
